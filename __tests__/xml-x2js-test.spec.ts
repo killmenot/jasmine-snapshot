@@ -3,17 +3,17 @@ import { expectxml, registerSnapshots } from "../src/index";
 
 declare var fail: (message: string) => void;
 
-describe("xml test", () =>
+describe("xml x2js test", () =>
 {
     let lastFailedWith = "";
     let snapshots = {
-        "xml test matches complex string 1": `{ "html": { "div": { "__text": "some&nbsp;text", "_id": "fart", "_name": "knocker" } }}`
+        "xml x2js test matches complex string 1": `{ "html": { "div": { "__text": "some&nbsp;text", "_id": "fart", "_name": "knocker" } }}`
     };
 
     beforeAll(() =>
     {
         fail = (message: string) => lastFailedWith = message;
-        registerSnapshots(snapshots, "xml test");
+        registerSnapshots(snapshots, "xml x2js test");
     });
 
     beforeEach(() =>

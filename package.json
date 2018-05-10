@@ -9,18 +9,19 @@
   "scripts": {
     "build": "webpack --env build -p",
     "dev": "webpack --progress --colors --watch --env dev",
+    "lint": "tslint \"src/**/*.ts\" \"__tests__/*.ts\"",
     "test": "jest",
     "example:test": "karma start"
   },
   "dependencies": {
-    "@types/vkbeautify": "^0.99.1",
     "@types/node": "^7.0.18",
+    "@types/vkbeautify": "^0.99.1",
     "difflib": "^0.2.4",
-    "vkbeautify": "^0.99.2",
-    "x2js": "^3.1.0"
+    "vkbeautify": "^0.99.2"
   },
   "devDependencies": {
     "@types/jasmine": "^2.5.47",
+    "himalaya": "^1.1.0",
     "jasmine-core": "^2.99.0",
     "jest": "^22.4.3",
     "karma": "^1.6.0",
@@ -29,9 +30,10 @@
     "karma-typescript": "^3.0.1",
     "ts-jest": "^22.4.5",
     "ts-loader": "^2.0.3",
-    "tslint": "*",
+    "tslint": "^5.10.0",
     "typescript": "*",
     "webpack": "^2.3.3",
+    "x2js": "^3.1.0",
     "yargs": "6.6.0"
   },
   "repository": {

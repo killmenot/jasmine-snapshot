@@ -1,7 +1,9 @@
 import * as difflib from "difflib";
 import { xml, json } from "vkbeautify";
-import X2JS = require("x2js");
+import parsersFactory, { ParserOptions, HimalayaOptions, Xml2jsOptions } from "./parsers";
 import "./overrideconsole";
+
+export { ParserOptions, HimalayaOptions, Xml2jsOptions };
 
 let current_snapshot_object: { [key: string]: string } = {};
 export function registerSnapshots(snapshot_object: { [key: string]: string }, name: string)
@@ -94,7 +96,7 @@ class AutoSnapshotSuite
 
     public getHTML(): string
     {
-        if(typeof document !== 'undefined') {
+        if (typeof document !== "undefined") {
             document.body.style.fontFamily = "Courier New";
             document.body.style.whiteSpace = "nowrap";
         }
@@ -208,7 +210,7 @@ jasmine.getEnv().addReporter({
                 return prev_html + "<br //>" + curr_suite.getHTML();
             }, "");
 
-        if(typeof document !== 'undefined') {
+        if (typeof document !== "undefined") {
             document.body.innerHTML = html_summary + document.body.innerHTML;
         } else {
             console.log(html_summary);
@@ -321,9 +323,9 @@ export function expectjs(actual: Object)
     return new SnapshotJSInner(actual);
 }
 
-export function expectxml(xml_actual: string)
+export function expectxml(xml_actual: string, parser?: string, parserOptions?: ParserOptions)
 {
-    return new SnapshotXMLInner(xml_actual);
+    return new SnapshotXMLInner(xml_actual, parser, parserOptions);
 }
 
 abstract class SnapshotInner<T extends Object | string>
@@ -384,7 +386,7 @@ export class SnapshotJSInner extends SnapshotInner<Object>
     {
         const allKeys = new Array<string>();
 
-        let json = JSON.stringify(js_object, (key: string, val: any) =>
+        let jsonStr = JSON.stringify(js_object, (key: string, val: any) =>
         {
             if (this.isIEPooOrCurcularReferences(key, val))
             {
@@ -395,7 +397,7 @@ export class SnapshotJSInner extends SnapshotInner<Object>
             return val;
         });
 
-        this.actual = JSON.parse(json);
+        this.actual = JSON.parse(jsonStr);
 
         return allKeys.sort((a: string, b: string) => (a > b) ? 1 : -1);
     }
@@ -435,18 +437,20 @@ export class SnapshotJSInner extends SnapshotInner<Object>
 
 export class SnapshotXMLInner extends SnapshotInner<string>
 {
-    constructor(xml_actual: string)
+    protected parser: (parser: string, parserOptions?: ParserOptions) => any;
+    protected parserOptions?: ParserOptions;
+
+    constructor(xml_actual: string, parser?: string, parserOptions?: ParserOptions)
     {
         super(xml_actual);
+        this.parser = parsersFactory(parser);
+        this.parserOptions = parserOptions;
         this.actual = xml_actual;
     }
 
     public toMatchSnapshot(snapshot?: string): void
     {
-        const X2JS2 = X2JS as any; // don't hate me, their typings suck
-        const x2js = new X2JS2();
-
-        let js_actual = x2js.xml2js(this.actual);
+        let js_actual = this.parser(this.actual, this.parserOptions);
         expectjs(js_actual).toMatchSnapshot(snapshot);
     }
 }
